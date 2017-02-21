@@ -79,6 +79,8 @@ for index, row in relPlot.iterrows():
 
 
 relPlot.plot.bar(stacked=True)
+
+
 #plt.legend(loc=10,prop={'size':8})
 # Shrink current axis by 20%
 
