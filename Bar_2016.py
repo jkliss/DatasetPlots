@@ -77,6 +77,7 @@ for p in ax.patches:
     ax.annotate('{:.1f}%'.format(100.*y/ncount), (x.mean(), y),
             ha='center', va='bottom', size='smaller') # set the alignment of the text
 
+
 # Use a LinearLocator to ensure the correct number of ticks
 ax.yaxis.set_major_locator(ticker.LinearLocator(11))
 
