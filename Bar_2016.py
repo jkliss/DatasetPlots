@@ -68,6 +68,7 @@ ax.yaxis.tick_right()
 ax.yaxis.set_label_position('right')
 ax2.yaxis.set_label_position('left')
 
+
 ax2.set_ylabel('Frequency [%]')
 
 for p in ax.patches:
