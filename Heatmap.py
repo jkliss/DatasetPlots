@@ -62,7 +62,6 @@ ylabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008'
 
 #print data['seq_rel_date_year']
 pdata = data.copy()
-pdata = pdata[pdata['seq_rel_date_year'] != 2017]
 
 #sorter = pd.read_csv("Organisms.txt")
 with open('Organisms.txt') as f:
@@ -83,7 +82,7 @@ print ctab_swap
 ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
 fig, ax = plt.subplots()
 #heatmap = ax.pcolor(ctab, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
-heatmap_swap = ax.pcolormesh(ctab_swap.values, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
+heatmap_swap = ax.pcolormesh(ctab_swap.values, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.8, edgecolor='grey')
 cbar = fig.colorbar(heatmap_swap)
 cbar.set_alpha(1)
 cbar.draw_all()
@@ -97,6 +96,8 @@ plt.gca().invert_yaxis()
 #plt.axis('equal')
 #plt.yticks(rotation=0)
 for (i, j), z in np.ndenumerate(ctab_swap):
-    if z != 0:
+    if z != 0 and z != 1:
         ax.text(j, i, z, ha='left', va='top', size='smaller')
+    elif z == 1:
+        ax.text(j, i, z, ha='left', va='top', size='smaller', color='white')
 plt.show()
