@@ -2,6 +2,19 @@ import math
 import matplotlib.pyplot as plt
 import pandas as pnd
 import seaborn as sns
+import numpy as np
+import pylab as m
+
+cdict = {
+'red'  :  ((0., 0., 0.), (0.5, 0.25, 0.25), (1., 1., 1.)),
+'green':  ((0., 0., 0.), (0.7, 0.0, 0.5), (1., 1., 1.)),
+'blue' :  ((0., 0., 0.), (0.5, 0.0, 0.0), (1., 1., 1.))
+}
+#generate the colormap with 1024 interpolated values
+my_cmap = m.matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 1024)
+
+
+
 
 pnd.set_option('display.width', 320)
 
@@ -31,7 +44,7 @@ def makeGroups(Superkingdom,Phylum,Class,Order):
 
 
 def makeRelativeData(x,sum):
-    return x/sum;
+    return (x/sum)*100;
 
 def DFmakeRelativeData(x):
     for index, row in x.iterrows():
@@ -68,17 +81,26 @@ data.Groups.cat.set_categories(sorter, inplace=True)
 pdata = data.copy()
 ## REMOVE 2017 DATASET
 
-print pdata[pdata['seq_rel_date_year'] == 2017]
-pdata = pdata[pdata['seq_rel_date_year'] != 2017]
 pdata.set_index('seq_rel_date_year', inplace=True)
 
 subset = pnd.DataFrame()
 subset['Year'] = data['seq_rel_date_year'].copy()
 subset['Groups'] = data['Groups'].copy()
 ct_subset = pnd.crosstab(subset['Groups'],subset['Year'], normalize='columns')
+ct_subset = ct_subset.applymap(lambda x: x*100).copy()
 
-#print ct_subset
-sns.heatmap(ct_subset, annot=True, annot_kws={"size": 8}, cmap='gnuplot2_r', alpha=0.7)
+
+def makeLabels(x):
+    if(x == 0):
+        return "";
+    else:
+        return str(round(x,3));
+
+labels = ct_subset.applymap(lambda x: makeLabels(x)).copy().as_matrix()
+
+colors = sns.light_palette("green", as_cmap=True)
+fix, ax = plt.subplots()
+heatmap = sns.heatmap(ct_subset, annot=labels, fmt='', annot_kws={"size": 8}, alpha=1)
 
 plt.yticks(rotation=0)
 plt.show()
@@ -90,7 +112,7 @@ plt.show()
 plottable = pdata.groupby(level='seq_rel_date_year').Groups.value_counts().unstack('Groups')
 relPlot = pnd.DataFrame(plottable.copy())
 relPlot = relPlot.applymap(lambda x: removeNaN(x))
-b
+
 for index, row in relPlot.iterrows():
     sum = 0
     for column in relPlot:
