@@ -42,36 +42,48 @@ data['seq_rel_date_year'] = data['seq_rel_date'].apply(lambda x: seq_rel_to_year
 data['Groups'] = data.apply(lambda x: makeGroups(x['Superkingdom'],x['Phylum'],x['Class'],x['Order']), axis=1)
 
 
-xlabels = ['Sulfolobales','Acidilobales' ,'Others Archaea' ,'Archaeoglobales',
-'Thermoproteales', 'Methanomassiliicoccales', 'Nitrosopumilales',
-'Desulfurococcales','Thermoplasmatales', 'Halobacteriales' ,'Haloferacales',
-'Natrialbales', 'Methanobacteriales', 'Methanococcales', 'Methanocellales',
-'Methanosarcinales', 'Methanomicrobiales', 'Thermococcales', 'Cyanobacteria',
-'Clostridia', 'Alphaproteobacteria', 'Tenericutes', 'Betaproteobacteria',
-'Negativicutes', 'Actinobacteria', 'Acidithiobacillia', 'Acidobacteria',
-'Gammaproteobacteria', 'Bacteroidetes', 'Bacilli', 'Verrucomicrobia',
-'Synergistetes', 'Tissierellia', 'Chloroflexi', 'Deltaproteobacteria',
-'Aquificae', 'Epsilonproteobacteria', 'Others Bacteria', 'Spirochaetes',
-'Thermodesulfobacteria', 'Caldiserica', 'Deferribacteres',
-'Candidatus Cloacimonetes', 'Nitrospirae', 'Chlamydiae', 'Chlorobi',
-'Thermotogae', 'Deinococcus-Thermus', 'Chrysiogenetes' ,'Dictyoglomi',
-'Elusimicrobia' ,'Erysipelotrichia', 'Fibrobacteres', 'Armatimonadetes',
-'Fusobacteria' ,'Gemmatimonadetes', 'Ignavibacteriae' ,'Planctomycetes',
-'Limnochordia']
+# xlabels = ['Sulfolobales','Acidilobales' ,'Others Archaea' ,'Archaeoglobales',
+# 'Thermoproteales', 'Methanomassiliicoccales', 'Nitrosopumilales',
+# 'Desulfurococcales','Thermoplasmatales', 'Halobacteriales' ,'Haloferacales',
+# 'Natrialbales', 'Methanobacteriales', 'Methanococcales', 'Methanocellales',
+# 'Methanosarcinales', 'Methanomicrobiales', 'Thermococcales', 'Cyanobacteria',
+# 'Clostridia', 'Alphaproteobacteria', 'Tenericutes', 'Betaproteobacteria',
+# 'Negativicutes', 'Actinobacteria', 'Acidithiobacillia', 'Acidobacteria',
+# 'Gammaproteobacteria', 'Bacteroidetes', 'Bacilli', 'Verrucomicrobia',
+# 'Synergistetes', 'Tissierellia', 'Chloroflexi', 'Deltaproteobacteria',
+# 'Aquificae', 'Epsilonproteobacteria', 'Others Bacteria', 'Spirochaetes',
+# 'Thermodesulfobacteria', 'Caldiserica', 'Deferribacteres',
+# 'Candidatus Cloacimonetes', 'Nitrospirae', 'Chlamydiae', 'Chlorobi',
+# 'Thermotogae', 'Deinococcus-Thermus', 'Chrysiogenetes' ,'Dictyoglomi',
+# 'Elusimicrobia' ,'Erysipelotrichia', 'Fibrobacteres', 'Armatimonadetes',
+# 'Fusobacteria' ,'Gemmatimonadetes', 'Ignavibacteriae' ,'Planctomycetes',
+# 'Limnochordia']
 ylabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
-xlabels = sorted(xlabels)
-print data['seq_rel_date_year']
+
+#print data['seq_rel_date_year']
 pdata = data.copy()
 pdata = pdata[pdata['seq_rel_date_year'] != 2017]
+
+#sorter = pd.read_csv("Organisms.txt")
+with open('Organisms.txt') as f:
+    sorter = f.read().splitlines()
+#print sorter
+#print type(sorter)
+xlabels = sorter
+pdata.Groups = pdata.Groups.astype("category")
+pdata.Groups.cat.set_categories(sorter, inplace=True)
+
 ctab = pd.crosstab(pdata['seq_rel_date_year'],pdata['Groups'])
 ctab_swap = pd.crosstab(pdata['Groups'],pdata['seq_rel_date_year'])
+
+
 print ctab_swap
 #del ctab_swap['2017']
 
 ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
 fig, ax = plt.subplots()
 #heatmap = ax.pcolor(ctab, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
-heatmap_swap = ax.pcolor(ctab_swap, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey',)
+heatmap_swap = ax.pcolormesh(ctab_swap.values, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
 cbar = fig.colorbar(heatmap_swap)
 cbar.set_alpha(1)
 cbar.draw_all()
@@ -81,7 +93,10 @@ ax.set_yticks(np.arange(ctab_norm.shape[1]) + 0.5, minor=False)
 ax.set_xticklabels(ylabels, minor=False)
 ax.set_xticks(np.arange(19) + 0.5, minor=False)
 plt.xticks(rotation=90)
+plt.gca().invert_yaxis()
 #plt.axis('equal')
 #plt.yticks(rotation=0)
-
+for (i, j), z in np.ndenumerate(ctab_swap):
+    if z != 0:
+        ax.text(j, i, z, ha='left', va='top', size='smaller')
 plt.show()

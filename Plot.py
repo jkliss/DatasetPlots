@@ -56,7 +56,13 @@ data['seq_rel_date_year'] = data['seq_rel_date'].apply(lambda x: seq_rel_to_year
 
 data['Groups'] = data.apply(lambda x: makeGroups(x['Superkingdom'],x['Phylum'],x['Class'],x['Order']), axis=1)
 
+########################### SORT GROUPS
 
+with open('Organisms.txt') as f:
+    sorter = f.read().splitlines()
+
+data.Groups = data.Groups.astype("category")
+data.Groups.cat.set_categories(sorter, inplace=True)
 
 ########################### BAR AND HISTOGRAM
 pdata = data.copy()
@@ -72,7 +78,7 @@ subset['Groups'] = data['Groups'].copy()
 ct_subset = pnd.crosstab(subset['Groups'],subset['Year'], normalize='columns')
 
 #print ct_subset
-sns.heatmap(ct_subset, annot=True, annot_kws={"size": 8})
+sns.heatmap(ct_subset, annot=True, annot_kws={"size": 8}, cmap='gnuplot2_r', alpha=0.7)
 
 plt.yticks(rotation=0)
 plt.show()
