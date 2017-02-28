@@ -61,6 +61,8 @@ data['Groups'] = data.apply(lambda x: makeGroups(x['Superkingdom'],x['Phylum'],x
 ########################### BAR AND HISTOGRAM
 pdata = data.copy()
 ## REMOVE 2017 DATASET
+
+print pdata[pdata['seq_rel_date_year'] == 2017]
 pdata = pdata[pdata['seq_rel_date_year'] != 2017]
 pdata.set_index('seq_rel_date_year', inplace=True)
 
@@ -82,7 +84,7 @@ plt.show()
 plottable = pdata.groupby(level='seq_rel_date_year').Groups.value_counts().unstack('Groups')
 relPlot = pnd.DataFrame(plottable.copy())
 relPlot = relPlot.applymap(lambda x: removeNaN(x))
-
+b
 for index, row in relPlot.iterrows():
     sum = 0
     for column in relPlot:
