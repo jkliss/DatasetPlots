@@ -39,7 +39,7 @@ Thermodesulfobacteria
 Thermotogae
 Verrucomicrobia
 Others Bacteria
-Others Archea
+Others Archaea
 Acidilobales
 Archaeoglobales
 Desulfurococcales
