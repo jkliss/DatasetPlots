@@ -87,7 +87,7 @@ labels = ct_subset.applymap(lambda x: makeLabels(x)).copy().as_matrix()
 
 colors = sns.light_palette("green", as_cmap=True)
 fix, ax = plt.subplots()
-heatmap = sns.heatmap(ct_subset, annot=labels, annot_kws={"size": 8}, fmt='', alpha=1)
+heatmap = sns.heatmap(ct_subset, annot=labels, annot_kws={"size": 8}, fmt='', vmin=0, vmax=30)
 plt.yticks(rotation=0)
 plt.subplots_adjust(left=0.13, right=1, top=0.98, bottom=0.08)
 plt.show()
