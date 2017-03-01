@@ -2,19 +2,6 @@ import math
 import matplotlib.pyplot as plt
 import pandas as pnd
 import seaborn as sns
-import numpy as np
-import pylab as m
-
-cdict = {
-'red'  :  ((0., 0., 0.), (0.5, 0.25, 0.25), (1., 1., 1.)),
-'green':  ((0., 0., 0.), (0.7, 0.0, 0.5), (1., 1., 1.)),
-'blue' :  ((0., 0., 0.), (0.5, 0.0, 0.0), (1., 1., 1.))
-}
-#generate the colormap with 1024 interpolated values
-my_cmap = m.matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 1024)
-
-
-
 
 pnd.set_option('display.width', 320)
 
@@ -46,7 +33,7 @@ def makeGroups(Superkingdom,Phylum,Class,Order):
 def makeRelativeData(x,sum):
     return (x/sum)*100;
 
-def DFmakeRelativeData(x):
+def dfMakeRelativeData(x):
     for index, row in x.iterrows():
         sum = 0
         for column in x:
@@ -94,15 +81,15 @@ def makeLabels(x):
     if(x == 0):
         return "";
     else:
-        return str(round(x,3));
-
+        return str(round(x,2));
+sns.set(font_scale=0.9)
 labels = ct_subset.applymap(lambda x: makeLabels(x)).copy().as_matrix()
 
 colors = sns.light_palette("green", as_cmap=True)
 fix, ax = plt.subplots()
-heatmap = sns.heatmap(ct_subset, annot=labels, fmt='', annot_kws={"size": 8}, alpha=1)
-
+heatmap = sns.heatmap(ct_subset, annot=labels, annot_kws={"size": 8}, fmt='', alpha=1)
 plt.yticks(rotation=0)
+plt.subplots_adjust(left=0.13, right=1, top=0.98, bottom=0.08)
 plt.show()
 #sns.countplot(y = 'seq_rel_date_year', hue='Groups', data=data, stack)
 
