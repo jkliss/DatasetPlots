@@ -43,59 +43,44 @@ def makeGroupsBetter(x,Superkingdom,dictio,sorter):
             return 'Others Bacteria';
     return x;
 
-data = pd.read_table("pasted_RefSeq_combined")
 
+data = pd.read_table("pasted_RefSeq_combined")
 year = data['seq_rel_date']
 data['seq_rel_date_year'] = data['seq_rel_date'].apply(lambda x: seq_rel_to_year(x))
-
 data['Groups'] = data.apply(lambda x: makeGroups(x['Superkingdom'],x['Phylum'],x['Class'],x['Order']), axis=1)
 
-
-# xlabels = ['Sulfolobales','Acidilobales' ,'Others Archaea' ,'Archaeoglobales',
-# 'Thermoproteales', 'Methanomassiliicoccales', 'Nitrosopumilales',
-# 'Desulfurococcales','Thermoplasmatales', 'Halobacteriales' ,'Haloferacales',
-# 'Natrialbales', 'Methanobacteriales', 'Methanococcales', 'Methanocellales',
-# 'Methanosarcinales', 'Methanomicrobiales', 'Thermococcales', 'Cyanobacteria',
-# 'Clostridia', 'Alphaproteobacteria', 'Tenericutes', 'Betaproteobacteria',
-# 'Negativicutes', 'Actinobacteria', 'Acidithiobacillia', 'Acidobacteria',
-# 'Gammaproteobacteria', 'Bacteroidetes', 'Bacilli', 'Verrucomicrobia',
-# 'Synergistetes', 'Tissierellia', 'Chloroflexi', 'Deltaproteobacteria',
-# 'Aquificae', 'Epsilonproteobacteria', 'Others Bacteria', 'Spirochaetes',
-# 'Thermodesulfobacteria', 'Caldiserica', 'Deferribacteres',
-# 'Candidatus Cloacimonetes', 'Nitrospirae', 'Chlamydiae', 'Chlorobi',
-# 'Thermotogae', 'Deinococcus-Thermus', 'Chrysiogenetes' ,'Dictyoglomi',
-# 'Elusimicrobia' ,'Erysipelotrichia', 'Fibrobacteres', 'Armatimonadetes',
-# 'Fusobacteria' ,'Gemmatimonadetes', 'Ignavibacteriae' ,'Planctomycetes',
-# 'Limnochordia']
-ylabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
-
-#print data['seq_rel_date_year']
-pdata = data.copy()
-
-#sorter = pd.read_csv("Organisms.txt")
+#########SORT#########
 with open('Organisms.txt') as f:
     sorter = f.read().splitlines()
-#print sorter
-#print type(sorter)
 
+ylabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
+
+#####NEW GROUPS#####
 group_counts = data['Groups'].value_counts().tolist()
 group_counts_index = data['Groups'].value_counts().index.tolist()
 group_dict = dict(zip(group_counts_index,group_counts))
 data['Groups'] = data.apply(lambda x: makeGroupsBetter(x['Groups'],x['Superkingdom'],group_dict,sorter), axis=1)
 
-pdata.Groups = pdata.Groups.astype("category")
-pdata.Groups.cat.set_categories(sorter, inplace=True)
-ctab = pd.crosstab(pdata['seq_rel_date_year'],pdata['Groups'])
-ctab_swap = pd.crosstab(pdata['Groups'],pdata['seq_rel_date_year'])
 
+data.Groups = data.Groups.astype("category")
+data.Groups.cat.set_categories(sorter, inplace=True)
+ctab = pd.crosstab(data['seq_rel_date_year'],data['Groups'])
+ctab_swap = pd.crosstab(data['Groups'],data['seq_rel_date_year'])
+ctabAAA = ctab_swap.copy()
+
+
+
+
+ctab_swap = ctab_swap.cumsum(axis=1)
 
 print ctab_swap
-#del ctab_swap['2017']
 
-ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
 fig, ax = plt.subplots()
+#heatmap_swap=ax.pcolormesh(ctabAAA.values)
+#########GRAPH##########
+ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
 #heatmap = ax.pcolor(ctab, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
-heatmap_swap = ax.pcolormesh(ctab_swap.values, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.8, edgecolor='grey')
+heatmap_swap = ax.pcolor(ctab_swap, norm=LogNorm(vmin=1, vmax=1565), cmap='RdYlBu_r', alpha=0.8, edgecolor='grey')
 cbar = fig.colorbar(heatmap_swap)
 cbar.set_alpha(1)
 cbar.draw_all()
