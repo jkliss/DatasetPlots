@@ -66,17 +66,12 @@ data.Groups = data.Groups.astype("category")
 data.Groups.cat.set_categories(sorter, inplace=True)
 ctab = pd.crosstab(data['seq_rel_date_year'],data['Groups'])
 ctab_swap = pd.crosstab(data['Groups'],data['seq_rel_date_year'])
-ctabAAA = ctab_swap.copy()
-
-
-
 
 ctab_swap = ctab_swap.cumsum(axis=1)
 
 print ctab_swap
 
 fig, ax = plt.subplots()
-#heatmap_swap=ax.pcolormesh(ctabAAA.values)
 #########GRAPH##########
 ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
 #heatmap = ax.pcolor(ctab, norm=LogNorm(vmin=1, vmax=418), cmap='RdYlBu_r', alpha=0.7, edgecolor='grey')
