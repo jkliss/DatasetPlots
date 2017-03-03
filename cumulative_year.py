@@ -60,7 +60,7 @@ print points_cum
 xlabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
 
 fig, ax = plt.subplots()
-plt.plot(xlabels, points, label='per year')
+plt.plot(xlabels, points, label='per year', linestyle="dashed")
 plt.plot(xlabels, points_cum, label='total')
 loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
 ax.xaxis.set_major_locator(loc)
@@ -68,5 +68,6 @@ ax.set_xlim([1999,2016])
 ax.set_xlabel('years')
 ax.set_ylabel('#organisms')
 plt.xticks(rotation=90)
-plt.legend(loc=0, fancybox=True,frameon=True ,framealpha=1, fontsize=12)
+plt.legend(loc='upper left', fancybox=True,frameon=True ,framealpha=1, fontsize=12)
+plt.title("Total number of Genomes per Year")
 plt.show()

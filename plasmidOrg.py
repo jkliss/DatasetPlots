@@ -70,7 +70,10 @@ plasmidSet['Normalized'] = plasmidSet['Amount']/plasmidSet['GroupCount']
 #
 #
 # plt.show()
+errData = pnd.DataFrame(columns=['mean','error'])
 
+errData['mean'] = data.groupby(by='Groups').mean()['amt']
+errData['error'] = data.groupby(by='Groups').std()['amt']
 
 ax = sns.boxplot(data=data, x='Groups', y='amt')
 ax = sns.swarmplot(x="Groups", y="amt", data=data, color='0.6', size=8, alpha=1, edgecolor='black', linewidth=0.5)

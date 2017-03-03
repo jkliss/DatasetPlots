@@ -47,6 +47,17 @@ def removeNaN(x):
         return 0;
     return x;
 
+def makeGroupsBetter(x,Superkingdom,dictio,sorter):
+    if(dictio.get(x) == 1):
+        sorter.remove(x)
+        if(Superkingdom== 'Archaea'):
+            return 'Others Archaea';
+        else:
+            return 'Others Bacteria';
+    return x;
+
+
+
 ########################## READ DATA
 data = pnd.read_table("pasted_RefSeq_combined")
 
@@ -63,6 +74,15 @@ with open('Organisms.txt') as f:
 
 data.Groups = data.Groups.astype("category")
 data.Groups.cat.set_categories(sorter, inplace=True)
+
+
+group_counts = data['Groups'].value_counts().tolist()
+group_counts_index = data['Groups'].value_counts().index.tolist()
+group_dict = dict(zip(group_counts_index,group_counts))
+data['Groups'] = data.apply(lambda x: makeGroupsBetter(x['Groups'],x['Superkingdom'],group_dict,sorter), axis=1)
+
+
+
 
 ########################### BAR AND HISTOGRAM
 pdata = data.copy()
@@ -87,8 +107,9 @@ labels = ct_subset.applymap(lambda x: makeLabels(x)).copy().as_matrix()
 
 colors = sns.light_palette("green", as_cmap=True)
 fix, ax = plt.subplots()
-heatmap = sns.heatmap(ct_subset, annot=labels, annot_kws={"size": 8}, fmt='', vmin=0, vmax=30)
+heatmap = sns.heatmap(ct_subset, annot=labels, annot_kws={"size": 8}, fmt='', vmin=0, vmax=30, cbar=False)
 heatmap.set_title("Percentage of submitted Genomes per year")
+
 plt.yticks(rotation=0)
 plt.subplots_adjust(left=0.13, right=1, top=0.98, bottom=0.08)
 plt.show()
