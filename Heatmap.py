@@ -70,7 +70,6 @@ data['Groups'] = data.apply(lambda x: makeGroups(x['Superkingdom'],x['Phylum'],x
 ylabels = ['1999','2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016']
 
 #print data['seq_rel_date_year']
-pdata = data.copy()
 
 #sorter = pd.read_csv("Organisms.txt")
 with open('Organisms.txt') as f:
@@ -82,14 +81,13 @@ group_counts = data['Groups'].value_counts().tolist()
 group_counts_index = data['Groups'].value_counts().index.tolist()
 group_dict = dict(zip(group_counts_index,group_counts))
 data['Groups'] = data.apply(lambda x: makeGroupsBetter(x['Groups'],x['Superkingdom'],group_dict,sorter), axis=1)
+data.Groups = data.Groups.astype("category")
+data.Groups.cat.set_categories(sorter, inplace=True)
+ctab = pd.crosstab(data['seq_rel_date_year'],data['Groups'])
+ctab_swap = pd.crosstab(data['Groups'],data['seq_rel_date_year'])
 
-pdata.Groups = pdata.Groups.astype("category")
-pdata.Groups.cat.set_categories(sorter, inplace=True)
-ctab = pd.crosstab(pdata['seq_rel_date_year'],pdata['Groups'])
-ctab_swap = pd.crosstab(pdata['Groups'],pdata['seq_rel_date_year'])
 
-
-print ctab_swap
+print len(ctab_swap)
 #del ctab_swap['2017']
 
 ctab_norm = (ctab - ctab.mean()) / (ctab.max() - ctab.min())
@@ -105,6 +103,9 @@ ax.set_yticks(np.arange(ctab_norm.shape[1]) + 0.5, minor=False)
 ax.set_xticklabels(ylabels, minor=False)
 ax.set_xticks(np.arange(19) + 0.5, minor=False)
 ax.set_ylim([0,53])
+ax.set_xlabel('Years')
+ax.set_ylabel('Groups')
+plt.title('Organisms added to Groups per Year')
 plt.xticks(rotation=90)
 plt.gca().invert_yaxis()
 #plt.axis('equal')
